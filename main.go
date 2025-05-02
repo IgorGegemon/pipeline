@@ -19,6 +19,7 @@ const bufferSize int = 10
 // фильттрацию отрицательных чисел
 func filterNegative(input <-chan int) <-chan int {
 	filteredStream := make(chan int)
+	fmt.Println("\nDebug info: filtering negative")
 	go func() {
 		defer close(filteredStream)
 		for {
@@ -27,7 +28,7 @@ func filterNegative(input <-chan int) <-chan int {
 				return
 			case i, isChannelOpen := <-input:
 				if !isChannelOpen || i < 0 {
-					continue //TODO:Вопрос к ментору. Если тут поставить return вместо continue, то после нескольких "некорректных чисел" будет заблокирован ввод
+					continue
 				}
 
 				select {
@@ -46,6 +47,7 @@ func filterNegative(input <-chan int) <-chan int {
 // фильттрацию чисел, не кратных 3
 func filterTriple(input <-chan int) <-chan int {
 	filteredStream := make(chan int)
+	fmt.Println("\nDebug info: filtering triple")
 	go func() {
 		defer close(filteredStream)
 		for {
@@ -54,7 +56,7 @@ func filterTriple(input <-chan int) <-chan int {
 				return
 			case i, isChannelOpen := <-input:
 				if !isChannelOpen || checkIfNotThreeDivisible(i) {
-					continue //TODO:Вопрос к ментору. Если тут поставить return вместо continue, то после нескольких "некорректных чисел" будет заблокирован ввод
+					continue
 				}
 
 				select {
@@ -83,6 +85,8 @@ func checkIfNotThreeDivisible(number int) bool {
 func buffering(input <-chan int) <-chan int {
 	bufferedChan := make(chan int)
 	cBuffer := CircBuffer.NewCircBuff(bufferSize, true)
+
+	fmt.Println("\nDebug info: buffering")
 
 	go func() {
 		for {
@@ -132,6 +136,7 @@ func dataSource() <-chan int {
 		for {
 			scanner.Scan()
 			data = scanner.Text()
+			fmt.Printf("\nDebug info: scanned text - %s", data)
 			if strings.EqualFold(data, "exit") {
 				fmt.Println("До скорых встреч!")
 				return
@@ -148,6 +153,7 @@ func dataSource() <-chan int {
 }
 
 func exec(source <-chan int) {
+	fmt.Println("Debug info: exec started")
 	for {
 		select {
 		case data := <-source:
